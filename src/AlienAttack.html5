@@ -1,0 +1,145 @@
+<!doctype html>
+<title>Alien Attack!</title>
+<meta charset="utf-8">
+<head>
+<link rel="stylesheet" href="AlienStyleSheet.css">
+</head>
+<body>
+<section id="game">
+<p> Shot the alien to save the earth, if you fail the earth will be invaded. The alien and cannon are each 20 x 20 pixels. The missile is 10 x 10 pixels. The background is 300 x 300 pixels. Positions X and Y can be chosen in this interval [0, 280]. Good luck!!</p>
+<div id="stage">
+<div id="background"></div>
+<div id="alien"></div>
+<div id="cannon"></div>
+<div id="missile"></div>
+</div>
+<p id="output"></p>
+<input id="inputX" type="text" placeholder="Enter X." autofocus>
+<input id="inputY" type="text" placeholder="Enter Y." autofocus>
+<button>Fire</button>
+</section>
+<script>
+//Game variables
+var guessX = 0;
+var guessY = 0;
+var alienX = 80;
+var alienY = 20;
+
+//Game state variables
+var shotsRemainding = 7;
+var shotsMade = 0;
+var gameState = "";
+var gameWon = false;
+
+//Input and output fields
+var output = document.querySelector("#output");
+var inputX = document.querySelector("#inputX");
+var inputY = document.querySelector("#inputY");
+
+//Alien, cannon and missile
+var alien = document.querySelector("#alien");
+var cannon = document.querySelector("#cannon");
+var missile = document.querySelector("#missile");
+
+//Button
+var button = document.querySelector("button");
+button.addEventListener("click", clickHandler, false);
+
+//Enter key
+window.addEventListener("keydown", keydownHandler, false);
+
+function clickHandler(){
+    validateInput();
+}
+
+function keydownHandler(event){
+    if(event.keyCode === 13){
+        validateInput();
+    }
+}
+
+function validateInput(){
+
+    guessX = parseInt(inputX.value);
+    guessY = parseInt(inputY.value);
+    if(isNaN(guessX) || isNaN(guessY)){
+        output.innerHTML = "Please enter numbers in position X and Y";
+        inputX.value = '';
+        inputY.value = '';
+    }
+    else{
+        if(guessX >= 0 && guessX <= 280 && guessY >= 0 && guessY <= 280) 
+            playGame();
+        else{
+            output.innerHTML = "Please enter numbers in the interval [0, 280].";
+        }
+    }
+    
+}
+function render(){
+    cannon.style.left = guessX + "px";
+    missile.style.left = guessX + "px";
+    missile.style.top = guessY + "px";
+    alien.style.left = alienX + "px";
+    alien.style.top = alienY + "px";
+    
+   
+}
+
+
+function playGame(){
+
+    //Updating game state variables
+    shotsRemainding = shotsRemainding -1;
+    shotsMade = shotsMade +1;
+    gameState = "Shots Remainding: " + shotsRemainding + " Shots Made: " + shotsMade;
+    
+    if(guessX >= alienX && guessX <= alienX+20){
+        if(guessY >= alienY && guessY <= alienY+20){
+            gameWon = true;
+            endGame();
+        }
+    }
+    else{
+        
+        output.innerHTML = " Miss!! Try again. " + gameState;
+        if(shotsRemainding < 1){
+            endGame();
+        }
+        /*inputX.value = '';
+        inputY.value = '';*/
+        if(!gameWon){
+        alienX = Math.floor(Math.random()*280);
+        if(alienY < 210){
+            alienY = alienY + 30;
+        }
+        
+        }
+        
+    }
+    render();
+    console.log(alienX + ", " + alienY);
+    console.log(alienX + "," + alienY);
+    
+}
+
+function endGame(){
+    if(gameWon){
+        output.innerHTML = "Good!!<br> You save the earth!!!" + gameState;
+    }
+    else{
+        output.innerHTML = " You lost!!<br> The aliens have invaded the earth." + gameState;
+    }
+    //Remove the event listener and disable the button and input fields
+    button.removeEventListener("click", clickHandler, false);
+    button.disabled = true;
+        
+    inputX.disabled = true;
+    inputY.disabled = true;
+    
+}
+
+
+</script>
+</body>
+</html>
